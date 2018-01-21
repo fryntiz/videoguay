@@ -52,9 +52,23 @@ class PeliculasController extends Controller
      */
     public function actionView($id)
     {
+        $x = Alquileres::find()
+            ->joinWith('socio')
+            ->where(['pelicula_id' => $id])
+            ->orderBy('created_at DESC')
+            ->limit(10);
+
+        return $this->render('view', [
+            'model' => $this->findModel($id),
+            'alquileres' => $x,
+        ]);
+
+
+        /*
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
+        */
     }
 
     /**
