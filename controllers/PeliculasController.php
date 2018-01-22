@@ -2,12 +2,14 @@
 
 namespace app\controllers;
 
-use Yii;
+use app\models\Alquileres;
 use app\models\Peliculas;
+use app\models\Socios;
 use app\models\PeliculasSearch;
+use Yii;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
  * PeliculasController implements the CRUD actions for Peliculas model.

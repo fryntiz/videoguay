@@ -47,8 +47,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'sort' => false,
         ]),
         'columns' => [
-            'pelicula.codigo',
-            'pelicula.titulo',
+            'socio.numero',
+            'socio.nombre',
             'created_at',
         ],
     ]) ?>

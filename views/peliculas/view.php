@@ -1,5 +1,7 @@
 <?php
 
+use yii\data\ActiveDataProvider;
+use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -32,6 +34,21 @@ $this->params['breadcrumbs'][] = $this->title;
             'codigo',
             'titulo',
             'precio_alq',
+        ],
+    ]) ?>
+
+    <h3>Últimos usuarios que han alquilado esta película</h3>
+
+    <?= GridView::widget([
+        'dataProvider' => new ActiveDataProvider([
+            'query' => $alquileres,
+            'pagination' => false,
+            'sort' => false,
+        ]),
+        'columns' => [
+            'socio.numero',
+            'socio.nombre',
+            'created_at',
         ],
     ]) ?>
 
