@@ -6,7 +6,6 @@ use app\models\Alquileres;
 use app\models\Peliculas;
 use app\models\Socios;
 use app\models\PeliculasSearch;
-use app\models\Socios;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -91,7 +90,6 @@ class PeliculasController extends Controller
             'model' => $this->findModel($id),
             'alquileres' => $alquileres,
         ]);
-        */
     }
 
     /**
