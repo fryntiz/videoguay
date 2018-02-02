@@ -30,7 +30,7 @@ class AlquilarForm extends Model
                 'targetAttribute' => ['numero' => 'numero'],
             ],
             [
-                ['codigo'],
+                ['codigo'], 
                 'exist',
                 'skipOnError' => true,
                 'targetClass' => Peliculas::className(),

@@ -8,18 +8,27 @@ use yii\widgets\ActiveForm;
 /** @var $socio \app\models\Socios */
 /** @var $pelicula \app\models\Peliculas */
 
-$this->title = 'Gestión de alquileres'
-    . (isset($socio) ? (' del socio ' . $socio->nombre) : '');
-$this->params['breadcrumbs'][] = [
-    'label' => 'Gestionar alquileres',
-    'url' => ['alquileres/gestionar']
-];
-if (isset($socio)) {
-    $this->params['breadcrumbs'][] = $socio->nombre;
+$this->title = 'Gestión de alquileres';
+$this->params['breadcrumbs'][] = ['label' => 'Alquileres', 'url' => ['alquileres/index']];
+$this->params['breadcrumbs'][] = $this->title;
+?>
+<?php
+/**
+ *
+ */
+class Calamares extends yii\db\ActiveRecord
+{
+
+    function __construct()
+    {
+        # code...
+    }
 }
+
 ?>
 
 <div class="row">
+    <h1><?= Html::encode($this->title) ?></h1>
     <div class="col-md-6">
         <?php $form = ActiveForm::begin([
             'method' => 'get',
@@ -32,7 +41,7 @@ if (isset($socio)) {
         <?php ActiveForm::end() ?>
 
         <?php if (isset($socio)): ?>
-            <h4><?= $socio->enlace ?></h4>
+            <h4><?= Html::encode($socio->nombre) ?></h4>
             <h4><?= Html::encode($socio->telefono) ?></h4>
 
             <hr>
@@ -49,13 +58,33 @@ if (isset($socio)) {
             <?php ActiveForm::end() ?>
 
             <?php if (isset($pelicula)): ?>
-                <h4><?= $pelicula->enlace ?></h4>
+                <h4><?= Html::encode($pelicula->titulo) ?></h4>
                 <h4><?= Html::encode(
                     Yii::$app->formatter->asCurrency($pelicula->precio_alq)
                 ) ?></h4>
 
-                <?php if ($pelicula->estaAlquilada): ?>
-                    <h4>Película ya alquilada por <?= $pelicula->pendiente->socio->enlace ?></h4>
+                <?php if ($pelicula->estaAlquilada):
+                    // Buscar el socio que ha alquilado desde tabla alquileres
+                    $x = \app\models\Alquileres::findOne(['pelicula_id' => $pelicula->id])->socio;
+                ?>
+                    <!--
+                        Pinta información del socio que tiene la película
+                    -->
+                    <h4>Película ya alquilada por <?= Html::a($x->nombre, ['socios/view', 'id' => $x->id]) ?> con número de socio <?= $x->numero ?></h4>
+
+                    <!--
+                        Añade botón con la posibilida de devolver
+                    -->
+                    <?= Html::beginForm(['alquileres/devolver', 'numero' => $x->numero], 'post') ?>
+
+                    <?php
+                        $alquiler = \app\models\Alquileres::findOne(['pelicula_id' => $pelicula->id])->id;
+                        var_dump($alquiler);
+                    ?>
+                        <?= Html::hiddenInput('id', $alquiler) ?>
+                        <td><?= Html::submitButton('Devolver', ['class' => 'btn-xs btn-danger']) ?></td>
+                    <?= Html::endForm() ?>
+
                 <?php else: ?>
                     <?= Html::beginForm([
                         'alquileres/alquilar',
@@ -89,7 +118,7 @@ if (isset($socio)) {
                         <?php foreach ($pendientes->each() as $alquiler): ?>
                             <tr>
                                 <td><?= Html::encode($alquiler->pelicula->codigo) ?></td>
-                                <td><?= $alquiler->pelicula->enlace ?></td>
+                                <td><?= Html::encode($alquiler->pelicula->titulo) ?></td>
                                 <td><?= Html::encode(
                                     Yii::$app->formatter->asDatetime($alquiler->created_at)
                                 ) ?></td>

@@ -2,8 +2,6 @@
 
 namespace app\models;
 
-use yii\helpers\Html;
-
 /**
  * This is the model class for table "socios".
  *
@@ -50,14 +48,6 @@ class Socios extends \yii\db\ActiveRecord
             'direccion' => 'Dirección',
             'telefono' => 'Teléfono',
         ];
-    }
-
-    public function getEnlace()
-    {
-        return Html::a(Html::encode($this->nombre), [
-            'socios/view',
-            'id' => $this->id,
-        ]);
     }
 
     /**

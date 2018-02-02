@@ -18,6 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
+        <?= Html::a('Gestionar', ['alquileres/gestionar', 'numero' => $model->numero], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
@@ -26,10 +27,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
-        <?= Html::a('Gestionar', [
-            'alquileres/gestionar',
-            'numero' => $model->numero,
-        ], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= DetailView::widget([
@@ -44,28 +41,38 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h3>Últimas peliculas alquiladas</h3>
 
-    <table class="table table-striped">
+    <table class="table">
         <thead>
             <th>Código</th>
             <th>Título</th>
             <th>Fecha de alquiler</th>
-            <th>Devolución</th>
+            <th>Devolver</th>
         </thead>
         <tbody>
             <?php foreach ($alquileres as $alquiler): ?>
                 <tr>
                     <td><?= Html::encode($alquiler->pelicula->codigo) ?></td>
                     <td><?= Html::encode($alquiler->pelicula->titulo) ?></td>
-                    <td><?= Yii::$app->formatter->asDatetime($alquiler->created_at) ?></td>
+                    <td><?= Html::encode($alquiler->created_at) ?></td>
                     <td>
-                        <?php if ($alquiler->estaDevuelto): ?>
-                            <?= Yii::$app->formatter->asDatetime($alquiler->devolucion) ?>
-                        <?php else: ?>
-                            <?= Html::beginForm(['alquileres/devolver', 'numero' => $model->numero]) ?>
+                        <?php
+                        if ($alquiler->devolucion === null):
+                        ?>
+
+                            <?= Html::beginForm(['alquileres/devolver', 'numero' => $model->numero], 'post') ?>
                                 <?= Html::hiddenInput('id', $alquiler->id) ?>
-                                <?= Html::submitButton('Devolver', ['class' => 'btn-xs btn-danger']) ?>
+                                <td><?= Html::submitButton('Devolver', ['class' => 'btn-xs btn-danger']) ?></td>
                             <?= Html::endForm() ?>
-                        <?php endif ?>
+
+                        <?php
+                        else:
+                        ?>
+                            <td>
+                                Ya devuelta
+                            </td>
+                        <?php
+                        endif
+                        ?>
                     </td>
                 </tr>
             <?php endforeach ?>

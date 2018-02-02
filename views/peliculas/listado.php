@@ -1,23 +1,24 @@
 <?php
-use yii\data\ActiveDataProvider;
-use yii\grid\GridView;
-
+use app\models\Peliculas;
+use yii\data\Sort;
+use yii\data\Pagination;
 use yii\helpers\Html;
 use yii\widgets\LinkPager;
-use yii\widgets\DetailView;
 
 /** @var $this \yii\web\View */
-/** @var $dataProvider ActiveDataProvider */
+/** @var $peliculas Peliculas[] */
+/** @var $pagination Pagination */
+/** @var $sort Sort */
 ?>
 
 <table class="table table-striped">
     <thead>
-        <th><?= $dataProvider->sort->link('codigo') ?></th>
-        <th><?= $dataProvider->sort->link('titulo') ?></th>
-        <th><?= $dataProvider->sort->link('precio_alq') ?></th>
+        <th><?= $sort->link('codigo') ?></th>
+        <th><?= $sort->link('titulo') ?></th>
+        <th><?= $sort->link('precio_alq') ?></th>
     </thead>
     <tbody>
-        <?php foreach ($dataProvider->getModels() as $pelicula): ?>
+        <?php foreach ($peliculas as $pelicula): ?>
             <tr>
                 <td><?= Html::encode($pelicula->codigo) ?></td>
                 <td><?= Html::encode($pelicula->titulo) ?></td>
@@ -29,23 +30,4 @@ use yii\widgets\DetailView;
     </tbody>
 </table>
 
-<?= LinkPager::widget(['pagination' => $dataProvider->pagination]) ?>
-
-<?php foreach ($dataProvider->getModels() as $pelicula): ?>
-    <?= DetailView::widget([
-        'model' => $pelicula,
-        'attributes' => [
-            'codigo',
-            'titulo',
-            [
-                'label' => 'Precio de alquiler',
-                'value' => $pelicula->precio_alq,
-                'format' => 'currency',
-                'contentOptions' => [
-                    'class' => ($pelicula->precio_alq < 0) ? 'text-danger' : '',
-                    'style' => 'font-weight: bold',
-                ],
-            ],
-        ],
-    ]) ?>
-<?php endforeach ?>
+<?= LinkPager::widget(['pagination' => $pagination]) ?>

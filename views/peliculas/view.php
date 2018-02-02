@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'codigo',
             'titulo',
-            'precio_alq:currency',
+            'precio_alq',
         ],
     ]) ?>
 
