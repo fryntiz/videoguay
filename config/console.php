@@ -8,7 +8,6 @@ $config = [
     'id' => 'basic-console',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
-    'language' => 'es-ES',
     'controllerNamespace' => 'app\commands',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
@@ -16,10 +15,6 @@ $config = [
         '@tests' => '@app/tests',
     ],
     'components' => [
-        'formatter' => [
-            'dateFormat' => 'php:d-m-Y',
-            'timeZone' => 'Europe/Madrid',
-        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],

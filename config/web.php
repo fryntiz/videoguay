@@ -1,7 +1,5 @@
 <?php
 
-use yii\helpers\Url;
-
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 $log = require __DIR__ . '/log.php';
@@ -17,6 +15,7 @@ $config = [
     'language' => 'es-ES',
     'components' => [
         'formatter' => [
+            'datetimeFormat' => 'php:d-m-Y H:i:s',
             'timeZone' => 'Europe/Madrid',
         ],
         'request' => [
@@ -52,14 +51,6 @@ $config = [
         */
     ],
     'params' => $params,
-    // 'on beforeAction' => function ($event) {
-    //     $action = $event->action->id;
-    //     $controller = $event->action->controller->id;
-    //     if ("$controller/$action" !== 'alquileres/devolver' &&
-    //         "$controller/$action" !== 'default/toolbar') {
-    //         Yii::$app->session->set('rutaVuelta', Url::to());
-    //     }
-    // },
 ];
 
 if (YII_ENV_DEV) {

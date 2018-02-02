@@ -16,11 +16,11 @@ namespace app\models;
  */
 class Alquileres extends \yii\db\ActiveRecord
 {
-    // /**
-    //  * Escenario usado cuando se crea una nueva instancia.
-    //  * @var string
-    //  */
-    // public const ESCENARIO_CREAR = 'crear';
+    /**
+     * Escenario usado cuando se crea una nueva instancia.
+     * @var string
+     */
+    public const ESCENARIO_CREAR = 'crear';
 
     /**
      * @inheritdoc
@@ -39,6 +39,13 @@ class Alquileres extends \yii\db\ActiveRecord
             [['socio_id', 'pelicula_id'], 'required'],
             [['socio_id', 'pelicula_id'], 'default', 'value' => null],
             [['socio_id', 'pelicula_id'], 'integer'],
+            [
+                ['created_at'],
+                'datetime',
+                'timeZone' => \Yii::$app->formatter->timeZone,
+                'timestampAttribute' => 'created_at',
+                'timestampAttributeFormat' => 'php:Y-m-d H:i:s',
+            ],
             [['devolucion'], 'safe'],
             [['socio_id', 'pelicula_id', 'created_at'], 'unique', 'targetAttribute' => ['socio_id', 'pelicula_id', 'created_at']],
             [['pelicula_id'], 'exist', 'skipOnError' => true, 'targetClass' => Peliculas::className(), 'targetAttribute' => ['pelicula_id' => 'id']],
@@ -50,11 +57,11 @@ class Alquileres extends \yii\db\ActiveRecord
             }, 'when' => function ($model, $attribute) {
                 return $model->id === null;
             }],
-            // [['pelicula_id'], function ($attribute, $params, $validator) {
-            //     if (Peliculas::findOne($this->pelicula_id)->estaAlquilada) {
-            //         $this->addError($attribute, 'La película ya está alquilada');
-            //     }
-            // }, 'on' => self::ESCENARIO_CREAR],
+            [['pelicula_id'], function ($attribute, $params, $validator) {
+                if (Peliculas::findOne($this->pelicula_id)->estaAlquilada) {
+                    $this->addError($attribute, 'La película ya está alquilada');
+                }
+            }, 'on' => self::ESCENARIO_CREAR],
         ];
     }
 
@@ -70,16 +77,6 @@ class Alquileres extends \yii\db\ActiveRecord
             'created_at' => 'Alquilada en',
             'devolucion' => 'Devolucion',
         ];
-    }
-
-    public function getEstaPendiente()
-    {
-        return $this->devolucion === null;
-    }
-
-    public function getEstaDevuelto()
-    {
-        return !$this->estaPendiente;
     }
 
     /**
