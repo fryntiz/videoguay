@@ -22,34 +22,36 @@ if (isset($socio)) {
 <div class="row">
     <div class="col-md-6">
         <?php $form = ActiveForm::begin([
+            'id' => 'gestionar-socio-form',
             'method' => 'get',
             'action' => ['alquileres/gestionar'],
         ]) ?>
-            <?= $form->field($gestionarSocioForm, 'numero') ?>
+            <?= $form->field($gestionarSocioForm, 'numero', ['enableAjaxValidation' => true]) ?>
             <div class="form-group">
                 <?= Html::submitButton('Buscar socio', ['class' => 'btn btn-success']) ?>
             </div>
         <?php ActiveForm::end() ?>
 
         <?php if (isset($socio)): ?>
-            <h4><?= $socio->enlace ?></h4>
+            <h4><?= Html::encode($socio->nombre) ?></h4>
             <h4><?= Html::encode($socio->telefono) ?></h4>
 
             <hr>
 
             <?php $form = ActiveForm::begin([
+                'id' => 'gestionar-pelicula-form',
                 'method' => 'get',
                 'action' => ['alquileres/gestionar'],
             ]) ?>
                 <?= Html::hiddenInput('numero', $gestionarPeliculaForm->numero) ?>
-                <?= $form->field($gestionarPeliculaForm, 'codigo') ?>
+                <?= $form->field($gestionarPeliculaForm, 'codigo', ['enableAjaxValidation' => true]) ?>
                 <div class="form-group">
                     <?= Html::submitButton('Buscar película', ['class' => 'btn btn-success']) ?>
                 </div>
             <?php ActiveForm::end() ?>
 
             <?php if (isset($pelicula)): ?>
-                <h4><?= $pelicula->enlace ?></h4>
+                <h4><?= Html::encode($pelicula->titulo) ?></h4>
                 <h4><?= Html::encode(
                     Yii::$app->formatter->asCurrency($pelicula->precio_alq)
                 ) ?></h4>
@@ -89,14 +91,16 @@ if (isset($socio)) {
                         <?php foreach ($pendientes->each() as $alquiler): ?>
                             <tr>
                                 <td><?= Html::encode($alquiler->pelicula->codigo) ?></td>
-                                <td><?= $alquiler->pelicula->enlace ?></td>
+                                <td><?= Html::encode($alquiler->pelicula->titulo) ?></td>
                                 <td><?= Html::encode(
                                     Yii::$app->formatter->asDatetime($alquiler->created_at)
                                 ) ?></td>
-                                <?= Html::beginForm(['alquileres/devolver', 'numero' => $socio->numero], 'post') ?>
-                                    <?= Html::hiddenInput('id', $alquiler->id) ?>
-                                    <td><?= Html::submitButton('Devolver', ['class' => 'btn-xs btn-danger']) ?></td>
-                                <?= Html::endForm() ?>
+                                <td>
+                                    <?= Html::beginForm(['alquileres/devolver', 'numero' => $socio->numero], 'post') ?>
+                                        <?= Html::hiddenInput('id', $alquiler->id) ?>
+                                        <?= Html::submitButton('Devolver', ['class' => 'btn-xs btn-danger']) ?>
+                                    <?= Html::endForm() ?>
+                                </td>
                             </tr>
                         <?php endforeach ?>
                     </tbody>

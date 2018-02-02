@@ -31,15 +31,11 @@ class GestionarSocioForm extends Model
             [['numero'], 'default'],
             [['numero'], 'filter', 'filter' => function ($value) {
                 if (!ctype_digit($value)) {
-                    $socio = Socios::find()
-                        ->where([
-                            'like',
-                            'lower(nombre)',
-                            mb_strtolower($value),
-                        ])
-                        ->one();
+                    $socio = \app\models\Socios::find()->where(['ilike', 'nombre', $value])->one();
                     if ($socio !== null) {
                         $value = $socio->numero;
+                    } else {
+                        $value = 0;
                     }
                 }
                 return $value;
