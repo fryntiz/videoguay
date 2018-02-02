@@ -7,12 +7,11 @@ use app\models\Peliculas;
 use app\models\PeliculasSearch;
 use app\models\Socios;
 use Yii;
-use yii\data\ActiveDataProvider;
-use yii\data\Pagination;
-use yii\data\Sort;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
+use yii\widgets\ActiveForm;
 
 /**
  * PeliculasController implements the CRUD actions for Peliculas model.
@@ -34,29 +33,29 @@ class PeliculasController extends Controller
         ];
     }
 
-    /**
-     * Muestra un listado paginado de películas.
-     * @return mixed
-     */
-    public function actionListado()
+    public function actionListado($numero)
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Peliculas::find(),
-            'pagination' => [
-                'pageSize' => 2,
-            ],
-            'sort' => [
-                'attributes' => [
-                    'codigo' => ['label' => 'Código'],
-                    'titulo' => ['label' => 'Título'],
-                    'precio_alq' => ['label' => 'Precio de alquiler'],
-                ],
-            ],
+        if (!Yii::$app->request->isAjax) {
+            return;
+        }
+
+        $socio = Socios::findOne(['numero' => $numero]);
+
+        if ($socio === null) {
+            return;
+        }
+
+        $alquileres = Alquileres::find()->where(['socio_id' => $socio->id]);
+        $out = \yii\grid\GridView::widget([
+            'id' => 'listado',
+            'dataProvider' => new \yii\data\ActiveDataProvider([
+                'query' => $alquileres,
+                'pagination' => false,
+                'sort' => false,
+            ])
         ]);
 
-        return $this->render('listado', [
-            'dataProvider' => $dataProvider,
-        ]);
+        return $out;
     }
 
     /**
@@ -67,18 +66,38 @@ class PeliculasController extends Controller
     {
         $alquilarForm = new \app\models\AlquilarForm();
 
+        if ($alquilarForm->load(Yii::$app->request->post())) {
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                return ActiveForm::validate($alquilarForm);
+            } elseif ($alquilarForm->validate()) {
+                $socio = Socios::findOne(['numero' => $alquilarForm->numero]);
+                $pelicula = Peliculas::findOne(['codigo' => $alquilarForm->codigo]);
+                $alquiler = new Alquileres([
+                    'socio_id' => $socio->id,
+                    'pelicula_id' => $pelicula->id,
+                ]);
+                $alquiler->save();
+                return $this->redirect(['index']);
+            }
+        }
+/*
+        if (Yii::$app->request->isAjax && $alquilarForm->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($alquilarForm);
+        }
+
         if ($alquilarForm->load(Yii::$app->request->post()) && $alquilarForm->validate()) {
             $socio = Socios::findOne(['numero' => $alquilarForm->numero]);
             $pelicula = Peliculas::findOne(['codigo' => $alquilarForm->codigo]);
             $alquiler = new Alquileres([
                 'socio_id' => $socio->id,
                 'pelicula_id' => $pelicula->id,
-                'scenario' => Alquileres::ESCENARIO_CREAR,
             ]);
             $alquiler->save();
             return $this->redirect(['index']);
         }
-
+*/
         return $this->render('alquilar', [
             'alquilarForm' => $alquilarForm,
         ]);

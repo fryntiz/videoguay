@@ -2,8 +2,6 @@
 
 namespace app\models;
 
-use yii\helpers\Html;
-
 /**
  * This is the model class for table "socios".
  *
@@ -52,24 +50,6 @@ class Socios extends \yii\db\ActiveRecord
         ];
     }
 
-    public function getEnlace()
-    {
-        return Html::a(Html::encode($this->nombre), [
-            'socios/view',
-            'id' => $this->id,
-        ]);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getPendientes()
-    {
-        return $this->getAlquileres()
-            ->where(['devolucion' => null])
-            ->orderBy(['created_at' => SORT_DESC]);
-    }
-
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -78,9 +58,6 @@ class Socios extends \yii\db\ActiveRecord
         return $this->hasMany(Alquileres::className(), ['socio_id' => 'id'])->inverseOf('socio');
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getPeliculas()
     {
         return $this->hasMany(Peliculas::className(), ['id' => 'pelicula_id'])

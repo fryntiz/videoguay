@@ -1,7 +1,5 @@
 <?php
 
-use yii\helpers\Url;
-
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 $log = require __DIR__ . '/log.php';
@@ -16,9 +14,6 @@ $config = [
     ],
     'language' => 'es-ES',
     'components' => [
-        'formatter' => [
-            'timeZone' => 'Europe/Madrid',
-        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'W__x5822t966lx7vIyGerM-UhyA0ffLA',
@@ -52,14 +47,7 @@ $config = [
         */
     ],
     'params' => $params,
-    // 'on beforeAction' => function ($event) {
-    //     $action = $event->action->id;
-    //     $controller = $event->action->controller->id;
-    //     if ("$controller/$action" !== 'alquileres/devolver' &&
-    //         "$controller/$action" !== 'default/toolbar') {
-    //         Yii::$app->session->set('rutaVuelta', Url::to());
-    //     }
-    // },
+    'timeZone' => 'Europe/Madrid',
 ];
 
 if (YII_ENV_DEV) {

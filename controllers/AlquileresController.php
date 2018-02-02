@@ -2,19 +2,12 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Alquileres;
 use app\models\AlquileresSearch;
-use app\models\GestionarPeliculaForm;
-use app\models\GestionarSocioForm;
-use app\models\Peliculas;
-use app\models\Socios;
-use Yii;
-use yii\filters\VerbFilter;
-use yii\helpers\Url;
-use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\web\Response;
+use yii\filters\VerbFilter;
 
 /**
  * AlquileresController implements the CRUD actions for Alquileres model.
@@ -36,96 +29,6 @@ class AlquileresController extends Controller
         ];
     }
 
-    public function beforeAction($action)
-    {
-        if ($action->id !== 'devolver') {
-            Yii::$app->session->set('rutaVuelta', Url::to());
-        }
-        return parent::beforeAction($action);
-    }
-
-    /**
-     * Alquila y devuelve películas en una sola acción.
-     * @return mixed
-     * @param null|mixed $numero
-     * @param null|mixed $codigo
-     */
-    public function actionGestionar($numero = null, $codigo = null)
-    {
-        $gestionarSocioForm = new GestionarSocioForm([
-            'numero' => $numero,
-        ]);
-
-        $data = [];
-
-        if ($numero !== null && $gestionarSocioForm->validate()) {
-            $data['socio'] = Socios::findOne(['numero' => $gestionarSocioForm->numero]);
-            $gestionarPeliculaForm = new GestionarPeliculaForm([
-                'numero' => $numero,
-                'codigo' => $codigo,
-            ]);
-            $data['gestionarPeliculaForm'] = $gestionarPeliculaForm;
-            if ($codigo !== null && $gestionarPeliculaForm->validate()) {
-                $data['pelicula'] = Peliculas::findOne([
-                    'codigo' => $gestionarPeliculaForm->codigo,
-                ]);
-            }
-        }
-
-        $data['gestionarSocioForm'] = $gestionarSocioForm;
-        return $this->render('gestionar', $data);
-    }
-
-    /**
-     * Alquila una película dados `socio_id` y `pelicula_id`
-     * pasados por POST.
-     * @param  string   $numero        El número del socio para volver a él.
-     * @return Response                La redirección.
-     * @throws BadRequestHttpException Si algún `id` es incorrecto.
-     */
-    public function actionAlquilar($numero)
-    {
-        $alquiler = new Alquileres();
-
-        if ($alquiler->load(Yii::$app->request->post(), '') &&
-            $alquiler->save()) {
-            return $this->redirect([
-                'alquileres/gestionar',
-                'numero' => $numero,
-            ]);
-        }
-
-        throw new BadRequestHttpException('No se ha creado el alquiler.');
-    }
-
-    /**
-     * Devuelve un alquiler indicado por el `id` pasado por POST.
-     * @param  string   $numero      El número del socio para volver a él.
-     * @return Response              La redirección.
-     * @throws NotFoundHttpException Si el `id` falta o no es correcto.
-     */
-    public function actionDevolver($numero)
-    {
-        if (($id = Yii::$app->request->post('id')) === null) {
-            throw new NotFoundHttpException('Falta el alquiler.');
-        }
-
-        if (($alquiler = Alquileres::findOne($id)) === null) {
-            throw new NotFoundHttpException('El alquiler no existe.');
-        }
-
-        $alquiler->devolucion = date('Y-m-d H:i:s');
-        $alquiler->save();
-
-        $url = Yii::$app->session->get(
-            'rutaVuelta',
-            ['alquileres/gestionar', 'numero' => $numero]
-        );
-        Yii::$app->session->remove('rutaVuelta');
-
-        return $this->redirect($url);
-    }
-
     /**
      * Lists all Alquileres models.
      * @return mixed
@@ -143,7 +46,7 @@ class AlquileresController extends Controller
 
     /**
      * Displays a single Alquileres model.
-     * @param int $id
+     * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -175,7 +78,7 @@ class AlquileresController extends Controller
     /**
      * Updates an existing Alquileres model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param int $id
+     * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -195,7 +98,7 @@ class AlquileresController extends Controller
     /**
      * Deletes an existing Alquileres model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param int $id
+     * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -209,7 +112,7 @@ class AlquileresController extends Controller
     /**
      * Finds the Alquileres model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param int $id
+     * @param integer $id
      * @return Alquileres the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
