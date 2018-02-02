@@ -7,6 +7,16 @@ use yii\widgets\ActiveForm;
 /** @var $gestionarPeliculaForm \app\models\GestionarPeliculaForm */
 /** @var $socio \app\models\Socios */
 /** @var $pelicula \app\models\Peliculas */
+
+$this->title = 'Gestión de alquileres'
+    . (isset($socio) ? (' del socio ' . $socio->nombre) : '');
+$this->params['breadcrumbs'][] = [
+    'label' => 'Gestionar alquileres',
+    'url' => ['alquileres/gestionar']
+];
+if (isset($socio)) {
+    $this->params['breadcrumbs'][] = $socio->nombre;
+}
 ?>
 
 <div class="row">
@@ -22,7 +32,7 @@ use yii\widgets\ActiveForm;
         <?php ActiveForm::end() ?>
 
         <?php if (isset($socio)): ?>
-            <h4><?= Html::encode($socio->nombre) ?></h4>
+            <h4><?= $socio->enlace ?></h4>
             <h4><?= Html::encode($socio->telefono) ?></h4>
 
             <hr>
@@ -39,13 +49,13 @@ use yii\widgets\ActiveForm;
             <?php ActiveForm::end() ?>
 
             <?php if (isset($pelicula)): ?>
-                <h4><?= Html::encode($pelicula->titulo) ?></h4>
+                <h4><?= $pelicula->enlace ?></h4>
                 <h4><?= Html::encode(
                     Yii::$app->formatter->asCurrency($pelicula->precio_alq)
                 ) ?></h4>
 
                 <?php if ($pelicula->estaAlquilada): ?>
-                    <h4>Película ya alquilada</h4>
+                    <h4>Película ya alquilada por <?= $pelicula->pendiente->socio->enlace ?></h4>
                 <?php else: ?>
                     <?= Html::beginForm([
                         'alquileres/alquilar',
@@ -79,7 +89,7 @@ use yii\widgets\ActiveForm;
                         <?php foreach ($pendientes->each() as $alquiler): ?>
                             <tr>
                                 <td><?= Html::encode($alquiler->pelicula->codigo) ?></td>
-                                <td><?= Html::encode($alquiler->pelicula->titulo) ?></td>
+                                <td><?= $alquiler->pelicula->enlace ?></td>
                                 <td><?= Html::encode(
                                     Yii::$app->formatter->asDatetime($alquiler->created_at)
                                 ) ?></td>

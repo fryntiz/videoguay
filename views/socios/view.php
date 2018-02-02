@@ -26,6 +26,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
+        <?= Html::a('Gestionar', [
+            'alquileres/gestionar',
+            'numero' => $model->numero,
+        ], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= DetailView::widget([
@@ -40,17 +44,31 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h3>Últimas peliculas alquiladas</h3>
 
-    <?= GridView::widget([
-        'dataProvider' => new ActiveDataProvider([
-            'query' => $alquileres,
-            'pagination' => false,
-            'sort' => false,
-        ]),
-        'columns' => [
-            'socio.numero',
-            'socio.nombre',
-            'created_at',
-        ],
-    ]) ?>
-
+    <table class="table table-striped">
+        <thead>
+            <th>Código</th>
+            <th>Título</th>
+            <th>Fecha de alquiler</th>
+            <th>Devolución</th>
+        </thead>
+        <tbody>
+            <?php foreach ($alquileres as $alquiler): ?>
+                <tr>
+                    <td><?= Html::encode($alquiler->pelicula->codigo) ?></td>
+                    <td><?= Html::encode($alquiler->pelicula->titulo) ?></td>
+                    <td><?= Yii::$app->formatter->asDatetime($alquiler->created_at) ?></td>
+                    <td>
+                        <?php if ($alquiler->estaDevuelto): ?>
+                            <?= Yii::$app->formatter->asDatetime($alquiler->devolucion) ?>
+                        <?php else: ?>
+                            <?= Html::beginForm(['alquileres/devolver', 'numero' => $model->numero]) ?>
+                                <?= Html::hiddenInput('id', $alquiler->id) ?>
+                                <?= Html::submitButton('Devolver', ['class' => 'btn-xs btn-danger']) ?>
+                            <?= Html::endForm() ?>
+                        <?php endif ?>
+                    </td>
+                </tr>
+            <?php endforeach ?>
+        </tbody>
+    </table>
 </div>

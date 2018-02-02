@@ -10,6 +10,7 @@ use app\models\Peliculas;
 use app\models\Socios;
 use Yii;
 use yii\filters\VerbFilter;
+use yii\helpers\Url;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -35,6 +36,14 @@ class AlquileresController extends Controller
         ];
     }
 
+    public function beforeAction($action)
+    {
+        if ($action->id !== 'devolver') {
+            Yii::$app->session->set('rutaVuelta', Url::to());
+        }
+        return parent::beforeAction($action);
+    }
+
     /**
      * Alquila y devuelve películas en una sola acción.
      * @return mixed
@@ -50,7 +59,7 @@ class AlquileresController extends Controller
         $data = [];
 
         if ($numero !== null && $gestionarSocioForm->validate()) {
-            $data['socio'] = Socios::findOne(['numero' => $numero]);
+            $data['socio'] = Socios::findOne(['numero' => $gestionarSocioForm->numero]);
             $gestionarPeliculaForm = new GestionarPeliculaForm([
                 'numero' => $numero,
                 'codigo' => $codigo,
@@ -108,10 +117,13 @@ class AlquileresController extends Controller
         $alquiler->devolucion = date('Y-m-d H:i:s');
         $alquiler->save();
 
-        return $this->redirect([
-            'alquileres/gestionar',
-            'numero' => $numero,
-        ]);
+        $url = Yii::$app->session->get(
+            'rutaVuelta',
+            ['alquileres/gestionar', 'numero' => $numero]
+        );
+        Yii::$app->session->remove('rutaVuelta');
+
+        return $this->redirect($url);
     }
 
     /**
