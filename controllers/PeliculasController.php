@@ -8,8 +8,6 @@ use app\models\PeliculasSearch;
 use app\models\Socios;
 use Yii;
 use yii\data\ActiveDataProvider;
-use yii\data\Pagination;
-use yii\data\Sort;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -42,17 +40,13 @@ class PeliculasController extends Controller
     {
         $dataProvider = new ActiveDataProvider([
             'query' => Peliculas::find(),
-            'pagination' => [
-                'pageSize' => 2,
-            ],
-            'sort' => [
-                'attributes' => [
-                    'codigo' => ['label' => 'Código'],
-                    'titulo' => ['label' => 'Título'],
-                    'precio_alq' => ['label' => 'Precio de alquiler'],
-                ],
-            ],
         ]);
+
+        $dataProvider->sort->attributes['todo'] = [
+            'asc' => ['codigo' => SORT_ASC, 'titulo' => SORT_ASC, 'precio_alq' => SORT_ASC],
+            'desc' => ['codigo' => SORT_DESC, 'titulo' => SORT_DESC, 'precio_alq' => SORT_DESC],
+            'default' => SORT_ASC,
+        ];
 
         return $this->render('listado', [
             'dataProvider' => $dataProvider,
