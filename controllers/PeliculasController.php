@@ -98,7 +98,7 @@ class PeliculasController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
-
+    
     /**
      * Displays a single Peliculas model.
      * @param int $id
