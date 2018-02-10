@@ -12,12 +12,20 @@ $config = [
     'controllerNamespace' => 'app\commands',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+        '@npm' => '@vendor/npm-asset',
         '@tests' => '@app/tests',
+    ],
+    'container' => [
+        'definitions' => [
+            yii\data\Pagination::className() => [
+                'pageSize' => 7,
+            ],
+        ],
     ],
     'components' => [
         'formatter' => [
             'dateFormat' => 'php:d-m-Y',
+            'datetimeFormat' => 'php:d-m-Y H:i:s',
             'timeZone' => 'Europe/Madrid',
         ],
         'cache' => [

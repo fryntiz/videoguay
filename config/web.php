@@ -1,6 +1,5 @@
 <?php
 
-use yii\helpers\Url;
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
@@ -15,9 +14,27 @@ $config = [
         '@npm' => '@vendor/npm-asset',
     ],
     'language' => 'es-ES',
+    'container' => [
+        'definitions' => [
+            yii\data\Pagination::className() => [
+                'pageSize' => 5,
+            ],
+            kartik\number\NumberControl::className() => [
+                'maskedInputOptions' => [
+                    'prefix' => '',
+                    'suffix' => ' €',
+                    //'allowMinus' => false,
+                    'groupSeparator' => '.',
+                    'radixPoint' => ',',
+                ],
+            ],
+        ],
+    ],
     'components' => [
         'formatter' => [
             'timeZone' => 'Europe/Madrid',
+            'datetimeFormat' => $params['datetimeFormat'],
+            'dateFormat' => $params['dateFormat'],
         ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
@@ -27,8 +44,8 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
-            'identityClass' => 'app\models\User',
-            'enableAutoLogin' => true,
+            'identityClass' => 'app\models\Usuarios',
+            //'enableAutoLogin' => true,
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -52,14 +69,39 @@ $config = [
         */
     ],
     'params' => $params,
-    // 'on beforeAction' => function ($event) {
-    //     $action = $event->action->id;
-    //     $controller = $event->action->controller->id;
-    //     if ("$controller/$action" !== 'alquileres/devolver' &&
-    //         "$controller/$action" !== 'default/toolbar') {
-    //         Yii::$app->session->set('rutaVuelta', Url::to());
-    //     }
-    // },
+    'modules' => [
+        'datecontrol' => [
+            'class' => '\kartik\datecontrol\Module',
+            'displaySettings' => [
+                \kartik\datecontrol\Module::FORMAT_DATE => $params['dateFormat'],
+                \kartik\datecontrol\Module::FORMAT_TIME => $params['timeFormat'],
+                \kartik\datecontrol\Module::FORMAT_DATETIME => $params['datetimeFormat'],
+            ],
+            'saveSettings' => [
+                \kartik\datecontrol\Module::FORMAT_DATE => 'php:Y-m-d',
+                \kartik\datecontrol\Module::FORMAT_TIME => 'php:H:i:s',
+                \kartik\datecontrol\Module::FORMAT_DATETIME => 'php:Y-m-d H:i:s',
+            ],
+            'displayTimezone' => 'Europe/Madrid',
+            'saveTimezone' => 'UTC',
+            'autoWidgetSettings' => [
+                \kartik\datecontrol\Module::FORMAT_DATETIME => [
+                    'options' => [
+                        'readonly' => true,
+                    ],
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'weekStart' => 1,
+                    ],
+                ],
+                \kartik\datecontrol\Module::FORMAT_DATE => [
+                    'options' => [
+                        'readonly' => true,
+                    ],
+                ],
+            ],
+        ],
+    ],
 ];
 
 if (YII_ENV_DEV) {
