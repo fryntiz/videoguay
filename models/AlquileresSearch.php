@@ -4,15 +4,41 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use kartik\daterange\DateRangeBehavior;
 
 /**
  * AlquileresSearch represents the model behind the search form of `app\models\Alquileres`.
  */
 class AlquileresSearch extends Alquileres
 {
-    public $desdeAlquilado;
+    public $createdAtInicio;
+    public $createdAtFin;
+    public $devolucionInicio;
+    public $devolucionFin;
 
-    public $hastaAlquilado;
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => DateRangeBehavior::className(),
+                'attribute' => 'created_at',
+                'dateStartAttribute' => 'createdAtInicio',
+                'dateEndAttribute' => 'createdAtFin',
+                'dateFormat' => 'd-m-Y',
+                'dateStartFormat' => 'Y-m-d',
+                'dateEndFormat' => 'Y-m-d',
+            ],
+            [
+                'class' => DateRangeBehavior::className(),
+                'attribute' => 'devolucion',
+                'dateStartAttribute' => 'devolucionInicio',
+                'dateEndAttribute' => 'devolucionFin',
+                'dateFormat' => 'd-m-Y',
+                'dateStartFormat' => 'Y-m-d',
+                'dateEndFormat' => 'Y-m-d',
+            ],
+        ];
+    }
 
     /**
      * @inheritdoc
@@ -21,16 +47,11 @@ class AlquileresSearch extends Alquileres
     {
         return [
             [['socio.numero', 'pelicula.codigo'], 'integer'],
+            [['devolucion', 'socio.nombre', 'pelicula.titulo'], 'safe'],
             [
-                [
-                    'created_at',
-                    'devolucion',
-                    'socio.nombre',
-                    'pelicula.titulo',
-                    'desdeAlquilado',
-                    'hastaAlquilado',
-                ],
-                'safe',
+                ['created_at', 'devolucion'],
+                'match',
+                'pattern' => '/^\d{2}-\d{2}-\d{4} - \d{2}-\d{2}-\d{4}$/'
             ],
         ];
     }
@@ -42,8 +63,6 @@ class AlquileresSearch extends Alquileres
             'socio.nombre',
             'pelicula.codigo',
             'pelicula.titulo',
-            'desdeAlquilado',
-            'hastaAlquilado',
         ]);
     }
 
@@ -108,7 +127,6 @@ class AlquileresSearch extends Alquileres
             'socios.numero' => $this->getAttribute('socio.numero'),
             'peliculas.codigo' => $this->getAttribute('pelicula.codigo'),
             // 'cast(created_at as date)' => $this->created_at,
-            'devolucion' => $this->devolucion,
         ]);
 
         $query->andFilterWhere([
@@ -125,8 +143,16 @@ class AlquileresSearch extends Alquileres
 
         $query->andFilterWhere([
             'between',
-            'cast(created_at as date)',
-            $this->desdeAlquilado, $this->hastaAlquilado,
+            'CAST(created_at AS date)',
+            $this->createdAtInicio,
+            $this->createdAtFin
+        ]);
+
+        $query->andFilterWhere([
+            'between',
+            'CAST(devolucion AS date)',
+            $this->devolucionInicio,
+            $this->devolucionFin
         ]);
 
         return $dataProvider;

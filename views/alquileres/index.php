@@ -35,11 +35,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter' => DateRangePicker::widget([
                     'model' => $searchModel,
                     'attribute' => 'created_at',
-                    'startAttribute' => 'desdeAlquilado',
-                    'endAttribute' => 'hastaAlquilado',
-                    'convertFormat'=>true,
+                    'readonly' => true,
+                    'autoUpdateOnInit' => false,
                     'pluginOptions'=> [
-                        'locale' => ['format' => 'd-m-Y'],
+                        'locale' => [
+                            'format' => 'DD-MM-YYYY',
+                            'cancelLabel' => 'Limpiar',
+                        ],
+                    ],
+                    'pluginEvents' => [
+                        "cancel.daterangepicker" => "function (ev, picker) {
+                            $(picker.element[0]).val('').trigger('change');
+                        }",
                     ],
                 ]),
                 'format' => 'raw',
@@ -53,7 +60,27 @@ $this->params['breadcrumbs'][] = $this->title;
                      ]);
                 },
             ],
-            'devolucion:datetime',
+            [
+                'attribute' => 'devolucion',
+                'filter' => DateRangePicker::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'devolucion',
+                    'readonly' => true,
+                    'autoUpdateOnInit' => false,
+                    'pluginOptions'=> [
+                        'locale' => [
+                            'format' => 'DD-MM-YYYY',
+                            'cancelLabel' => 'Limpiar',
+                        ],
+                    ],
+                    'pluginEvents' => [
+                        "cancel.daterangepicker" => "function (ev, picker) {
+                            $(picker.element[0]).val('').trigger('change');
+                        }",
+                    ],
+                ]),
+                'format' => 'datetime',
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
