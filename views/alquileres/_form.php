@@ -2,7 +2,6 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use kartik\datecontrol\DateControl;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Alquileres */
@@ -17,13 +16,9 @@ use kartik\datecontrol\DateControl;
 
     <?= $form->field($model, 'pelicula_id')->textInput() ?>
 
-    <?= $form->field($model, 'created_at')->widget(DateControl::className(), [
-        'type' => DateControl::FORMAT_DATETIME,
-    ]); ?>
+    <?= $form->field($model, 'created_at')->textInput() ?>
 
-    <?= $form->field($model, 'devolucion')->widget(DateControl::className(), [
-        'type' => DateControl::FORMAT_DATETIME,
-    ]); ?>
+    <?= $form->field($model, 'devolucion')->textInput() ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

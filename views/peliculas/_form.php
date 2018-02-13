@@ -2,7 +2,6 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use kartik\number\NumberControl;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Peliculas */
@@ -17,7 +16,7 @@ use kartik\number\NumberControl;
 
     <?= $form->field($model, 'titulo')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'precio_alq')->widget(NumberControl::classname()) ?>
+    <?= $form->field($model, 'precio_alq')->textInput() ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

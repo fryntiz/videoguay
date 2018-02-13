@@ -3,7 +3,6 @@
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 $log = require __DIR__ . '/log.php';
-$container = require __DIR__ . '/container.php';
 
 $config = [
     'id' => 'basic-console',
@@ -13,15 +12,13 @@ $config = [
     'controllerNamespace' => 'app\commands',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm' => '@vendor/npm-asset',
+        '@npm'   => '@vendor/npm-asset',
         '@tests' => '@app/tests',
     ],
-    'container' => $container,
     'components' => [
         'formatter' => [
+            'dateFormat' => 'php:d-m-Y',
             'timeZone' => 'Europe/Madrid',
-            'datetimeFormat' => $params['datetimeFormat'],
-            'dateFormat' => $params['dateFormat'],
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',

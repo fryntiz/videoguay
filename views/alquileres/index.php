@@ -1,9 +1,7 @@
 <?php
 
-//use app\widgets\DateRangePicker;
 use yii\helpers\Html;
-use yii\grid\GridView;
-use kartik\daterange\DateRangePicker;
+use kartik\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\AlquileresSearch */
@@ -11,6 +9,12 @@ use kartik\daterange\DateRangePicker;
 
 $this->title = 'Alquileres';
 $this->params['breadcrumbs'][] = $this->title;
+
+function format($v)
+{
+    return $v === null ? '' : Yii::$app->formatter->asDatetime($v);
+}
+
 ?>
 <div class="alquileres-index">
 
@@ -25,34 +29,39 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            'socio.numero',
-            'socio.nombre',
-            'pelicula.codigo',
+            'socio_id',
             'pelicula.titulo',
             [
                 'attribute' => 'created_at',
-                'filter' => DateRangePicker::widget([
+                'format' => 'datetime',
+                'filterType' => 'kartik\datecontrol\DateControl',
+                'filterWidgetOptions' => [
                     'model' => $searchModel,
                     'attribute' => 'created_at',
-                ]),
-                'format' => 'raw',
-                'value' => function ($model, $key, $index, $column) {
-                    $d = new DateTime($model->created_at);
-                    $d = $d->format('Y-m-d');
-                    return Html::a(Yii::$app->formatter->asDatetime($model->created_at),
-                        ['alquileres/index',
-                         'AlquileresSearch[hastaAlquilado]' => $d,
-                         'AlquileresSearch[desdeAlquilado]' => $d,
-                     ]);
-                },
+                    'type' => 'datetime',
+                    'displayFormat' => 'php:d-m-Y H:i:s',
+                    'displayTimezone' => \Yii::$app->formatter->timeZone,
+                    'saveFormat' => 'php:Y-m-d H:i:s',
+                    'saveTimezone' => 'UTC',
+                    'readonly' => true,
+                ],
             ],
             [
                 'attribute' => 'devolucion',
-                'filter' => DateRangePicker::widget([
+                'format' => 'datetime',
+                'filterType' => GridView::FILTER_DATETIME,
+                'filterWidgetOptions' => [
                     'model' => $searchModel,
                     'attribute' => 'devolucion',
-                ]),
-                'format' => 'datetime',
+                    'options' => [
+                        'value' => format($searchModel->devolucion),
+                    ],
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'dd-mm-yyyy hh:ii:ss',
+                    ],
+                    'readonly' => true,
+                ],
             ],
 
             ['class' => 'yii\grid\ActionColumn'],
