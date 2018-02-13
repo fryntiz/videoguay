@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use yii\helpers\Html;
+
 /**
  * This is the model class for table "socios".
  *
@@ -50,6 +52,14 @@ class Socios extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getEnlace()
+    {
+        return Html::a(Html::encode($this->nombre), [
+            'socios/view',
+            'id' => $this->id,
+        ]);
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -75,5 +85,21 @@ class Socios extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Peliculas::className(), ['id' => 'pelicula_id'])
             ->via('alquileres');
+    }
+
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+
+        if ($insert) {
+            $id = \Yii::$app->db->createCommand(
+                'INSERT INTO socios_id DEFAULT VALUES RETURNING id'
+            )->queryScalar();
+
+            $this->id = $id;
+        }
+        return true;
     }
 }

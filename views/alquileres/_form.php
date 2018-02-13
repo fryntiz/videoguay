@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use kartik\datetime\DateTimePicker;
+use kartik\datecontrol\DateControl;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Alquileres */
@@ -17,19 +17,13 @@ use kartik\datetime\DateTimePicker;
 
     <?= $form->field($model, 'pelicula_id')->textInput() ?>
 
-    <?= $form->field($model, 'created_at')
-        ->widget(DateTimePicker::classname(), [
-            'options' => [
-                'placeholder' => 'Introduzca instante...',
-                'value' => Yii::$app->formatter->asDatetime($model->created_at),
-            ],
-            'pluginOptions' => [
-                'autoclose' => true,
-                'format' => 'dd-mm-yyyy hh:ii:ss',
-            ]
-        ]) ?>
+    <?= $form->field($model, 'created_at')->widget(DateControl::className(), [
+        'type' => DateControl::FORMAT_DATETIME,
+    ]); ?>
 
-    <?= $form->field($model, 'devolucion')->textInput() ?>
+    <?= $form->field($model, 'devolucion')->widget(DateControl::className(), [
+        'type' => DateControl::FORMAT_DATETIME,
+    ]); ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

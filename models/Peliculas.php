@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use yii\helpers\Html;
+
 /**
  * This is the model class for table "peliculas".
  *
@@ -14,12 +16,21 @@ namespace app\models;
  */
 class Peliculas extends \yii\db\ActiveRecord
 {
+    public $todo;
+
+    private $_pendiente;
+
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
         return 'peliculas';
+    }
+
+    public function attributes()
+    {
+        return array_merge(parent::attributes(), ['todo']);
     }
 
     /**
@@ -45,18 +56,38 @@ class Peliculas extends \yii\db\ActiveRecord
             'codigo' => 'Código',
             'titulo' => 'Título',
             'precio_alq' => 'Precio alquiler',
+            'todo' => 'Todo',
         ];
     }
 
+    public function getEnlace()
+    {
+        return Html::a(Html::encode($this->titulo), [
+            'peliculas/view',
+            'id' => $this->id,
+        ]);
+    }
     /**
      * Comprueba si una película está alquilada.
-     * @return bool Si está alquilada o no.
+     * @return bool Si la película está alquilada o no.
      */
     public function getEstaAlquilada()
     {
-        return $this->getAlquileres()
+        $alquiler = $this->getAlquileres()
             ->where(['devolucion' => null])
-            ->exists();
+            ->one();
+
+        $this->_pendiente = $alquiler;
+
+        return $alquiler !== null;
+    }
+
+    public function getPendiente()
+    {
+        if ($this->_pendiente === null) {
+            $this->getEstaAlquilada();
+        }
+        return $this->_pendiente;
     }
 
     /**

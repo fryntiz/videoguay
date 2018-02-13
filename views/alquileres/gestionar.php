@@ -3,8 +3,20 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /** @var $this \yii\web\View */
-/** @var $model \app\models\GestionarForm */
+/** @var $gestionarSocioForm \app\models\GestionarSocioForm */
+/** @var $gestionarPeliculaForm \app\models\GestionarPeliculaForm */
 /** @var $socio \app\models\Socios */
+/** @var $pelicula \app\models\Peliculas */
+
+$this->title = 'Gestión de alquileres'
+    . (isset($socio) ? (' del socio ' . $socio->nombre) : '');
+$this->params['breadcrumbs'][] = [
+    'label' => 'Gestionar alquileres',
+    'url' => ['alquileres/gestionar']
+];
+if (isset($socio)) {
+    $this->params['breadcrumbs'][] = $socio->nombre;
+}
 ?>
 
 <div class="row">
@@ -13,19 +25,53 @@ use yii\widgets\ActiveForm;
             'method' => 'get',
             'action' => ['alquileres/gestionar'],
         ]) ?>
-
-            <?= $form->field($model, 'numero') ?>
-
-            <?php if (isset($socio)): ?>
-                <h4><?= Html::encode($socio->nombre) ?></h4>
-                <h4><?= Html::encode($socio->telefono) ?></h4>
-            <?php endif ?>
-
+            <?= $form->field($gestionarSocioForm, 'numero') ?>
             <div class="form-group">
-                <?= Html::submitButton('Buscar', ['class' => 'btn btn-success']) ?>
+                <?= Html::submitButton('Buscar socio', ['class' => 'btn btn-success']) ?>
             </div>
-
         <?php ActiveForm::end() ?>
+
+        <?php if (isset($socio)): ?>
+            <h4><?= $socio->enlace ?></h4>
+            <h4><?= Html::encode($socio->telefono) ?></h4>
+
+            <hr>
+
+            <?php $form = ActiveForm::begin([
+                'method' => 'get',
+                'action' => ['alquileres/gestionar'],
+            ]) ?>
+                <?= Html::hiddenInput('numero', $gestionarPeliculaForm->numero) ?>
+                <?= $form->field($gestionarPeliculaForm, 'codigo') ?>
+                <div class="form-group">
+                    <?= Html::submitButton('Buscar película', ['class' => 'btn btn-success']) ?>
+                </div>
+            <?php ActiveForm::end() ?>
+
+            <?php if (isset($pelicula)): ?>
+                <h4><?= $pelicula->enlace ?></h4>
+                <h4><?= Html::encode(
+                    Yii::$app->formatter->asCurrency($pelicula->precio_alq)
+                ) ?></h4>
+
+                <?php if ($pelicula->estaAlquilada): ?>
+                    <h4>Película ya alquilada por <?= $pelicula->pendiente->socio->enlace ?></h4>
+                <?php else: ?>
+                    <?= Html::beginForm([
+                        'alquileres/alquilar',
+                        'numero' => $socio->numero,
+                    ]) ?>
+                        <?= Html::hiddenInput('socio_id', $socio->id) ?>
+                        <?= Html::hiddenInput('pelicula_id', $pelicula->id) ?>
+                        <div class="form-group">
+                            <?= Html::submitButton('Alquilar', [
+                                'class' => 'btn btn-success'
+                            ]) ?>
+                        </div>
+                    <?= Html::endForm() ?>
+                <?php endif ?>
+            <?php endif ?>
+        <?php endif ?>
     </div>
     <div class="col-md-6">
         <?php if (isset($socio)): ?>
@@ -43,7 +89,7 @@ use yii\widgets\ActiveForm;
                         <?php foreach ($pendientes->each() as $alquiler): ?>
                             <tr>
                                 <td><?= Html::encode($alquiler->pelicula->codigo) ?></td>
-                                <td><?= Html::encode($alquiler->pelicula->titulo) ?></td>
+                                <td><?= $alquiler->pelicula->enlace ?></td>
                                 <td><?= Html::encode(
                                     Yii::$app->formatter->asDatetime($alquiler->created_at)
                                 ) ?></td>

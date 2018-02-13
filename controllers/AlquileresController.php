@@ -4,10 +4,15 @@ namespace app\controllers;
 
 use app\models\Alquileres;
 use app\models\AlquileresSearch;
-use app\models\GestionarForm;
+use app\models\GestionarPeliculaForm;
+use app\models\GestionarSocioForm;
+use app\models\Peliculas;
 use app\models\Socios;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\filters\VerbFilter;
+use yii\helpers\Url;
+use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
@@ -32,26 +37,66 @@ class AlquileresController extends Controller
         ];
     }
 
+    public function beforeAction($action)
+    {
+        if ($action->id !== 'devolver') {
+            Yii::$app->session->set('rutaVuelta', Url::to());
+        }
+        return parent::beforeAction($action);
+    }
+
     /**
      * Alquila y devuelve películas en una sola acción.
      * @return mixed
      * @param null|mixed $numero
+     * @param null|mixed $codigo
      */
-    public function actionGestionar($numero = null)
+    public function actionGestionar($numero = null, $codigo = null)
     {
-        $model = new GestionarForm([
+        $gestionarSocioForm = new GestionarSocioForm([
             'numero' => $numero,
         ]);
 
         $data = [];
 
-        if ($numero !== null && $model->validate()) {
-            $socio = Socios::findOne(['numero' => $model->numero]);
-            $data['socio'] = $socio;
+        if ($numero !== null && $gestionarSocioForm->validate()) {
+            $data['socio'] = Socios::findOne(['numero' => $gestionarSocioForm->numero]);
+            $gestionarPeliculaForm = new GestionarPeliculaForm([
+                'numero' => $numero,
+                'codigo' => $codigo,
+            ]);
+            $data['gestionarPeliculaForm'] = $gestionarPeliculaForm;
+            if ($codigo !== null && $gestionarPeliculaForm->validate()) {
+                $data['pelicula'] = Peliculas::findOne([
+                    'codigo' => $gestionarPeliculaForm->codigo,
+                ]);
+            }
         }
 
-        $data['model'] = $model;
+        $data['gestionarSocioForm'] = $gestionarSocioForm;
         return $this->render('gestionar', $data);
+    }
+
+    /**
+     * Alquila una película dados `socio_id` y `pelicula_id`
+     * pasados por POST.
+     * @param  string   $numero        El número del socio para volver a él.
+     * @return Response                La redirección.
+     * @throws BadRequestHttpException Si algún `id` es incorrecto.
+     */
+    public function actionAlquilar($numero)
+    {
+        $alquiler = new Alquileres();
+
+        if ($alquiler->load(Yii::$app->request->post(), '') &&
+            $alquiler->save()) {
+            return $this->redirect([
+                'alquileres/gestionar',
+                'numero' => $numero,
+            ]);
+        }
+
+        throw new BadRequestHttpException('No se ha creado el alquiler.');
     }
 
     /**
@@ -73,10 +118,13 @@ class AlquileresController extends Controller
         $alquiler->devolucion = date('Y-m-d H:i:s');
         $alquiler->save();
 
-        return $this->redirect([
-            'alquileres/gestionar',
-            'numero' => $numero,
-        ]);
+        $url = Yii::$app->session->get(
+            'rutaVuelta',
+            ['alquileres/gestionar', 'numero' => $numero]
+        );
+        Yii::$app->session->remove('rutaVuelta');
+
+        return $this->redirect($url);
     }
 
     /**
@@ -90,6 +138,26 @@ class AlquileresController extends Controller
 
         return $this->render('index', [
             'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionListado()
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => Alquileres::find()->joinWith(['socio', 'pelicula']),
+        ]);
+
+        $dataProvider->sort->attributes['socio.numero'] = [
+            'asc' => ['socios.numero' => SORT_ASC],
+            'desc' => ['socios.numero' => SORT_DESC],
+        ];
+        $dataProvider->sort->attributes['pelicula.codigo'] = [
+            'asc' => ['peliculas.codigo' => SORT_ASC],
+            'desc' => ['peliculas.codigo' => SORT_DESC],
+        ];
+
+        return $this->render('listado', [
             'dataProvider' => $dataProvider,
         ]);
     }
