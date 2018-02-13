@@ -14,13 +14,13 @@
     },
     "minimum-stability": "stable",
     "require": {
-        "php": ">7.0.0",
+        "php": "~7.1.0",
         "ext-gd": "*",
         "ext-intl": "*",
         "yiisoft/yii2": "~2.0.13",
         "yiisoft/yii2-bootstrap": "~2.0.0",
         "yiisoft/yii2-swiftmailer": "~2.1.0",
-        "phpoffice/phpspreadsheet": "^1.1"
+        "kartik-v/yii2-widget-datetimepicker": "^1.4"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
@@ -34,7 +34,8 @@
         "codeception/specify": "~0.4.3",
         "squizlabs/php_codesniffer": "^2.0",
         "yiisoft/yii2-coding-standards": "^2.0",
-        "friendsofphp/php-cs-fixer": "^2.8"
+        "friendsofphp/php-cs-fixer": "^2.8",
+        "phpoffice/phpexcel": "^1.8"
     },
     "config": {
         "process-timeout": 1800,

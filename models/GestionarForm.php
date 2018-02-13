@@ -4,7 +4,7 @@ namespace app\models;
 
 use yii\base\Model;
 
-class GestionarPeliculaForm extends Model
+class GestionarForm extends Model
 {
     /**
      * El número del socio.
@@ -33,9 +33,8 @@ class GestionarPeliculaForm extends Model
     public function rules()
     {
         return [
-            [['numero', 'codigo'], 'required'],
-            [['numero', 'codigo'], 'default'],
-            [['numero', 'codigo'], 'integer'],
+            [['numero'], 'required'],
+            [['numero', 'codigo'], 'number'],
             [
                 ['numero'],
                 'exist',
