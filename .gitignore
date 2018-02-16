@@ -39,4 +39,3 @@ tests/chromedriver
 # local environment variables
 .env
 
-composer.lock
