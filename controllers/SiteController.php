@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\ContactForm;
 use app\models\LoginForm;
+use Spatie\Dropbox\Exceptions\BadRequest;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -54,6 +55,21 @@ class SiteController extends Controller
         ];
     }
 
+    public function actionEmail()
+    {
+        $result = Yii::$app->mailer->compose()
+            ->setFrom(Yii::$app->params['adminEmail'])
+            ->setTo('josecarlos.arjona@iesdonana.org')
+            ->setSubject('Este es un mensaje de prueba')
+            ->setTextBody('Este es un mensaje de prueba que escribo para ver si llega el correo al Doñana desde el Yii2.')
+            // ->setHtmlBody('<b>HTML content</b>')
+            ->send();
+        if (!$result) {
+            // No se ha enviado correctamente
+        }
+        return 'Hecho';
+    }
+
     /**
      * Displays homepage.
      *
@@ -63,6 +79,25 @@ class SiteController extends Controller
     public function actionIndex()
     {
         return $this->render('index');
+    }
+
+    public function actionDropbox()
+    {
+        $client = new \Spatie\Dropbox\Client(getenv('DROPBOX_TOKEN'));
+        try {
+            $client->delete('12.jpg');
+        } catch (BadRequest $e) {
+            // No se hace nada
+        }
+        $client->upload(
+            '12.jpg',
+            file_get_contents(Yii::getAlias('@uploads/12.jpg')),
+            'overwrite'
+        );
+        $res = $client->createSharedLinkWithSettings('12.jpg', [
+            'requested_visibility' => 'public',
+        ]);
+        return $res['url'];
     }
 
     /**
